@@ -1,0 +1,86 @@
+{ world = world, path = path }
+
+. path = bfs world
+. world = { grid = grid, size = size, pos = self_pos, goal = goal_pos }
+. grid = grid_set (grid_set empty_grid goal_pos goal_ind) self_pos self_ind
+
+-- Pos :: { r : Int, c : Int }
+-- Path :: List<Pos>
+-- Size :: { n_rows : Int, n_cols : Int }
+-- Grid :: List<List<Int>>
+-- World :: { grid : Grid, size : Size, pos : Pos, goal : Pos }
+
+-- bfs :: World -> Path
+. bfs = w -> bfs_rec w [[w@pos]]
+
+-- bfs_rec :: World -> List<Path> -> Path
+. bfs_rec = w ->
+  | [] -> []
+  | [path, ...paths] -> (grid_get w@grid path@0) == goal_ind |>
+    | #true -> path
+    | #false -> (bfs_rec w (concat paths new_paths)
+      . new_paths = map (x -> x >+ path) new_neighbors
+      . new_neighbors = filter (x -> not_includes x path) all_neighbors
+      . all_neighbors = iter_neighbors w@size path@0)
+
+. self_ind = 1
+. goal_ind = 2
+. self_pos = unique_pos size goal_pos
+. goal_pos = rand_pos size
+
+. empty_grid = grid_new size
+. size = { n_rows = 4, n_cols = 5 }
+
+-- iter_neighbors :: Size -> Pos -> List<Pos>
+. iter_neighbors = size -> p -> filter_in_bounds (map (o -> pos_new (p@r + o@r) (p@c + o@c)) offsets) size
+
+-- offsets :: List<Pos>
+. offsets = map (x -> pos_new x@0 x@1) [[0, 1], [0, -1], [1, 0], [-1, 0]]
+
+-- filter_in_bounds :: List<Pos> -> Size -> List<Pos>
+. filter_in_bounds = ps -> s -> filter (p -> in_bounds p s) ps
+
+-- in_bounds :: Pos -> Size -> Bool
+. in_bounds = p -> s -> p@r >= 0 && p@c >= 0 && p@r < s@n_rows && p@c < s@n_cols
+
+-- unique_pos :: Size -> Pos -> Pos
+. unique_pos = size -> pos -> (attempt@r == pos@r && attempt@c == pos@c |>
+  | #true -> unique_pos size pos
+  | #false -> attempt
+  . attempt = rand_pos size)
+
+-- rand_pos :: Size -> Pos
+. rand_pos = size -> pos_new ($$randint size@n_rows) ($$randint size@n_cols)
+
+-- pos_new :: Int -> Int -> Pos
+. pos_new = r -> c -> { r = r, c = c }
+
+-- grid_new :: Size -> Grid
+. grid_new = size -> repeat size@n_rows (zeros size@n_cols)
+
+-- grid_set :: Grid -> Pos -> Int -> Grid
+. grid_set = g -> pos -> v -> map_idx (xs -> i -> (map_idx (x -> j -> i == pos@r && j == pos@c |> | #true -> v | #false -> x) xs)) g
+
+-- grid_get :: Grid -> Pos -> Int
+. grid_get = g -> pos -> g@(pos@r)@(pos@c)
+
+-- replace :: Int -> T -> List<T> -> List<T>
+. replace = i -> v -> map_idx (y -> j -> j == i |> | #true -> v | #false -> y)
+
+-- repeat :: Int -> T -> List<T>
+. repeat = n -> v -> map (_ -> v) (range n)
+
+-- includes :: T -> List<T> -> Bool
+. includes = v -> xs -> any (x -> x == v) xs
+
+-- not_includes :: T -> List<T> -> Bool
+. not_includes = v -> xs -> all (x -> x /= v) xs
+
+-- zeros :: Int -> List<Int>
+. zeros = n -> map (_ -> 0) (range n)
+
+-- map_idx :: (T -> Int -> S) -> List<T> -> List<S>
+. map_idx = f -> mapi f 0
+  . mapi = f -> i ->
+    | [] -> []
+    | [x, ...xs] -> f x i >+ mapi f (i + 1) xs

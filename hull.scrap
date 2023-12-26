@@ -1,0 +1,56 @@
+$$render colored_points
+
+. colored_points = concat (map_color "burlywood" points) (map_color "steelblue" hull)
+. hull = gift_wrap points
+
+-- ColorPoint :: { x : Int, y : Int, color : String }
+-- Point :: { x : Int, y : Int }
+-- Size :: { w : Int, h : Int }
+
+. points = map (_ -> rand_point size) (range n_points)
+
+-- gift_wrap :: List<Point> -> List<Point>
+. gift_wrap = points -> ($$listlength points) < 3 |>
+  | #true -> []
+  | #false -> (build_hull points [] min_point min_point
+    . min_point = find_y_min points size)
+
+-- build_hull :: List<Point> -> List<Point> -> Point -> Point -> List<Point>
+. build_hull = points -> hull -> start -> curr -> (next == start |>
+  | #true -> hull +< curr
+  | #false -> build_hull points (hull +< curr) start next
+    . next = get_next_hull_point points curr (find_not_equal points curr))
+
+-- get_next_hull_point :: List<Point> -> Point -> Point -> Point
+. get_next_hull_point = points -> curr -> next -> points |>
+  | [] -> next
+  | [cand, ...rest] -> cand == curr |>
+    | #true -> get_next_hull_point rest curr next
+    | #false -> is_rh_turn curr next cand |>
+      | #true -> get_next_hull_point rest curr cand
+      | #false -> get_next_hull_point rest curr next
+
+-- is_rh_turn :: Point -> Point -> Point -> Bool
+. is_rh_turn = (a -> b -> c -> get_turn a b c > 0
+  . get_turn = a -> b -> c -> ((b@y - a@y) * (c@x - b@x) - (b@x - a@x) * (c@y - b@y)))
+      
+-- map_color :: String -> List<Point> -> List<ColorPoint>
+. map_color = c -> ps -> (map (p -> add_color c p) ps
+  . add_color = c -> p -> { x = p@x, y = p@y, c = c })
+
+. size = { w = 100, h = 100 }
+. n_points = 30
+
+-- find_not_equal :: List<Point> -> Point -> Point
+. find_not_equal = ps -> t -> (foldr (p -> a -> p /= t |> | #true -> p | #false -> a) d ps
+  . d = "ERROR")
+
+-- find_y_min :: List<Point> -> Size -> Point
+. find_y_min = ps -> s -> (foldr (p -> a -> p@y < a@y |> | #true -> p | #false -> a) d ps
+  . d = point_new s@w s@h)
+
+-- rand_point :: Size -> Point
+. rand_point = s -> point_new ($$randint s@w) ($$randint s@h)
+
+-- point_new :: Int -> Int -> Point
+. point_new = x -> y -> { x = x, y = y }
