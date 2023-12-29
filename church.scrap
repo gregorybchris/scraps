@@ -1,0 +1,67 @@
+decode_list ["pair", "number"] <| cons (pair two three) (cons (pair six (fact four)) nil)
+. six = mult two three
+. four = plus two two
+. three = succ two
+. two = succ one
+
+-- -- -- -- -- -- lists -- -- -- -- -- --
+. decode_list = ts -> xs -> decode_boolean (is_nil xs) |>
+ | #true -> []
+ | #false -> ts |>
+   | [t, ...ts_sub] -> (decoded_head >+ decode_list ts tail
+      . decoded_head = t |>
+        | "number" -> decode_number head
+        | "boolean" -> decode_boolean head
+        | "pair" -> decode_pair ts_sub head
+        | "list" -> decode_list ts_sub head
+      . head = car xs
+      . tail = cdr xs)
+
+. nil = pair true true
+. is_nil = xs -> fst xs
+. cons = x -> xs -> pair false (pair x xs)
+. car = xs -> fst (snd xs)
+. cdr = xs -> snd (snd xs)
+
+-- -- -- -- -- -- pairs -- -- -- -- -- --
+. decode_pair = ts -> p -> ts |>
+   | [t, ...ts_sub] -> t |>
+    | "number" -> [decode_number (fst p), decode_number (snd p)]
+    | "boolean" -> [decode_boolean (fst p), decode_boolean (snd p)]
+    | "pair" -> [decode_pair ts_sub (fst p), decode_pair ts_sub (snd p)]
+
+. pair = x -> y -> f -> f x y
+. fst = p -> p (x -> _ -> x)
+. snd = p -> p (_ -> y -> y)
+
+-- -- -- -- -- -- numbers -- -- -- -- -- --
+. decode_number = n -> is_zero n (_ -> 0) (_ -> decode_number (pred n) + 1) ""
+
+. eq = a -> b -> and (leq a b) (leq b a)
+. leq = a -> b -> is_zero (minus a b)
+
+. odd = n -> not (even n)
+. even = n -> is_zero n (_ -> true) (_ -> not (even (pred n))) ""
+
+. fact = n -> is_zero n (_ -> one) (_ -> mult n (fact (pred n))) 0
+. power = a -> b -> f -> b a f
+. mult = a -> b -> f -> a (b f)
+. plus = a -> b -> b succ a
+. minus = a -> b -> b pred a
+. succ = n -> f -> x -> f (n f x)
+. pred = n -> f -> x -> n (g -> h -> h (g f)) (_ -> x) (u -> u)
+
+. is_zero = n -> n (_ -> false) true
+
+. zero = _ -> x -> x
+. one = f -> x -> f x
+
+-- -- -- -- -- -- booleans -- -- -- -- -- --
+. decode_boolean = b -> b #true #false 
+
+. if = b -> x -> y -> b x y
+. and = x -> y -> x (y true false) false
+. or = x -> y -> x true (y true false)
+. not = x -> x false true
+. true = x -> _ -> x
+. false = _ -> y -> y
