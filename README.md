@@ -8,3 +8,4 @@
 
 - [bfs](bfs.scrap) - grid-based breadth-first search
 - [hull](hull.scrap) - convex hull with the gift wrapping (Jarvis march) algorithm
+- [church](church.scrap) - Church encodings for numbers, booleans, pairs, and lists
