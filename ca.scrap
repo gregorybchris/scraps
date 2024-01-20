@@ -1,0 +1,66 @@
+display_pattern pattern
+
+. pattern = apply_rule_pattern rule init_row n_iters
+
+. rule = rule_30
+. init_row = make_row 49 25
+. n_iters = 20
+
+-- make_row :: Int -> Int -> List<Int>
+. make_row = n -> k -> n == 0 |> 
+  | #true -> []
+  | #false -> n == k |>
+    | #true -> make_row (n - 1) k +< 1
+    | #false -> make_row (n - 1) k +< 0
+
+-- apply_rule_pattern :: (List<Int> -> Int) -> List<Int> -> Int -> List<List<Int>>
+. apply_rule_pattern = rule -> row -> n -> n |>
+  | 0 -> [row]
+  | i -> row >+ apply_rule_pattern rule (apply_rule_row rule row) (i - 1)
+
+-- apply_rule_row :: (List<Int> -> Int) -> List<Int> -> List<Int>
+. apply_rule_row = rule -> row -> map_index (_ -> i -> apply_rule rule row i) row
+
+-- apply_rule :: (List<Int> -> Int) -> List<Int> -> Int -> Int
+. apply_rule = rule -> row -> i -> i == 0 |>
+  | #true -> rule [0, row@0, row@1]
+  | #false -> i == ($$listlength row) - 1 |>
+    | #true -> rule [row@(i - 1), row@i, 0]
+    | #false -> rule [row@(i - 1), row@i, row@(i + 1)]
+
+-- rule_30 :: List<Int> -> Int
+. rule_30 = cells -> cells |>
+  | [1, 1, 1] -> 0
+  | [1, 1, 0] -> 0
+  | [1, 0, 1] -> 0
+  | [1, 0, 0] -> 1
+  | [0, 1, 1] -> 1
+  | [0, 1, 0] -> 1
+  | [0, 0, 1] -> 1
+  | [0, 0, 0] -> 0
+
+-- display_pattern :: List<List<Int>> -> String
+. display_pattern = pattern -> join "\n" (map display_row pattern)
+
+-- display_row :: List<Int> -> String
+. display_row = row -> join "" (map display_cell row)
+
+-- display_cell :: Int -> String
+. display_cell = cell -> cell |>
+  | 0 -> "-"
+  | 1 -> "@"
+
+-- join :: String -> List<String> -> String
+. join = sep -> xs -> xs |>
+  | [] -> ""
+  | [x] -> x
+  | [x, ...xs] -> x ++ sep ++ (join sep xs)
+
+-- map_index :: (T -> Int -> S) -> List<T> -> List<S>
+. map_index = f -> (map_index_rec f 0
+  . map_index_rec = f -> i ->
+    | [] -> []
+    | [x, ...xs] -> f x i >+ map_index_rec f (i + 1) xs)
+
+-- repeat :: Int -> T -> List<T>
+. repeat = n -> v -> map (_ -> v) (range n)
