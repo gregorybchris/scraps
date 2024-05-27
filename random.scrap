@@ -1,4 +1,4 @@
-rand_array (new_generator 42) 0 100 10
+rand_array (new_generator #java () 42) 0 100 10
 
 . rand_array = gen -> min -> max -> n -> n |>
   | 0 -> []
@@ -6,10 +6,19 @@ rand_array (new_generator 42) 0 100 10
     . rand_val = get_int new_gen
     . new_gen = next gen min max)
 
--- from Java's java.util.Random
-. new_generator = seed -> ({params = params, seed = seed, state = state}
-  . params = {mod = 281474976710656, mult = 25214903917, inc = 11}
+. new_generator = method -> seed -> ({params = params, seed = seed, state = state}
+  . params = get_params method
   . state = {min = 0, max = 0})
+
+. get_params = method -> method |>
+  -- Java's java.util.Random
+  | #java () -> {mod = 281474976710656, mult = 25214903917, inc = 11}
+
+  -- glibc 2.26 (2017) https://sourceware.org/git/?p=glibc.git;a=blob;f=stdlib/random_r.c;hb=glibc-2.26#l362
+  | #glibc () -> {mod = 2147483648, mult = 1103515245, inc = 12345}
+
+  -- The Central Randomizer 1.3 (c) 1997 by Paul Houle (houle@msc.cornell.edu)
+  | #houle () -> {mod = 233280, mult = 9301, inc = 49297}
 
 . get_int = gen -> $$floor (get gen)
 
