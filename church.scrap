@@ -6,8 +6,8 @@ decode_list ["pair", "number"] <| cons (pair two three) (cons (pair six (fact fo
 
 -- -- -- -- -- -- lists -- -- -- -- -- --
 . decode_list = ts -> xs -> decode_boolean (is_nil xs) |>
- | #true -> []
- | #false -> ts |>
+ | #true () -> []
+ | #false () -> ts |>
    | [t, ...ts_sub] -> (decoded_head >+ decode_list ts tail
       . decoded_head = t |>
         | "number" -> decode_number head
@@ -57,7 +57,7 @@ decode_list ["pair", "number"] <| cons (pair two three) (cons (pair six (fact fo
 . one = f -> x -> f x
 
 -- -- -- -- -- -- booleans -- -- -- -- -- --
-. decode_boolean = b -> b #true #false 
+. decode_boolean = b -> b #true () #false ()
 
 . if = b -> x -> y -> b x y
 . and = x -> y -> x (y true false) false

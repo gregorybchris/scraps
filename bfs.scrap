@@ -17,8 +17,8 @@
 . bfs_rec = w ->
   | [] -> []
   | [path, ...paths] -> (grid_get w@grid path@0) == goal_ind |>
-    | #true -> path
-    | #false -> (bfs_rec w (concat paths new_paths)
+    | #true () -> path
+    | #false () -> (bfs_rec w (concat paths new_paths)
       . new_paths = map (x -> x >+ path) new_neighbors
       . new_neighbors = filter (x -> not_includes x path) all_neighbors
       . all_neighbors = iter_neighbors w@size path@0)
@@ -45,8 +45,8 @@
 
 -- unique_pos :: Size -> Pos -> Pos
 . unique_pos = size -> pos -> (attempt@r == pos@r && attempt@c == pos@c |>
-  | #true -> unique_pos size pos
-  | #false -> attempt
+  | #true () -> unique_pos size pos
+  | #false () -> attempt
   . attempt = rand_pos size)
 
 -- rand_pos :: Size -> Pos
@@ -59,13 +59,13 @@
 . grid_new = size -> repeat size@n_rows (zeros size@n_cols)
 
 -- grid_set :: Grid -> Pos -> Int -> Grid
-. grid_set = g -> pos -> v -> map_idx (xs -> i -> (map_idx (x -> j -> i == pos@r && j == pos@c |> | #true -> v | #false -> x) xs)) g
+. grid_set = g -> pos -> v -> map_idx (xs -> i -> (map_idx (x -> j -> i == pos@r && j == pos@c |> | #true () -> v | #false () -> x) xs)) g
 
 -- grid_get :: Grid -> Pos -> Int
 . grid_get = g -> pos -> g@(pos@r)@(pos@c)
 
 -- replace :: Int -> T -> List<T> -> List<T>
-. replace = i -> v -> map_idx (y -> j -> j == i |> | #true -> v | #false -> y)
+. replace = i -> v -> map_idx (y -> j -> j == i |> | #true () -> v | #false () -> y)
 
 -- repeat :: Int -> T -> List<T>
 . repeat = n -> v -> map (_ -> v) (range n)
