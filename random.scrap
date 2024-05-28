@@ -1,15 +1,18 @@
 rand_array (new_generator #java () 42) 0 100 10
 
+-- rand_array :: Generator -> Int -> Int -> Int -> List<Int>
 . rand_array = gen -> min -> max -> n -> n |>
   | 0 -> []
   | n -> (rand_val >+ rand_array new_gen min max (n - 1)
     . rand_val = get_int new_gen
     . new_gen = next gen min max)
 
+-- new_generator :: Method -> Int -> Generator
 . new_generator = method -> seed -> ({params = params, seed = seed, state = state}
   . params = get_params method
   . state = {min = 0, max = 0})
 
+-- get_params :: Method -> Params
 . get_params = method -> method |>
   -- Java's java.util.Random
   | #java () -> {mod = 281474976710656, mult = 25214903917, inc = 11}
@@ -20,9 +23,12 @@ rand_array (new_generator #java () 42) 0 100 10
   -- The Central Randomizer 1.3 (c) 1997 by Paul Houle (houle@msc.cornell.edu)
   | #houle () -> {mod = 233280, mult = 9301, inc = 49297}
 
+-- get_int :: Generator -> Int
 . get_int = gen -> $$floor (get gen)
 
+-- get :: Generator -> Float
 . get = gen -> (gen@seed / gen@params@mod) * (gen@state@max - gen@state@min)
 
+-- next :: Generator -> Int -> Int -> Generator
 . next = gen -> min -> max -> ({params = gen@params, seed = next_seed, state = {min = min, max = max}}
   . next_seed = gen@state@min + (gen@seed * gen@params@mult + gen@params@inc) % gen@params@mod)
