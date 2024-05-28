@@ -11,3 +11,4 @@
 - [church](church.scrap) - Church encodings for numbers, booleans, pairs, and lists
 - [random](random.scrap) - Linear congruential generator (LCG) for random numbers
 - [ca](ca.scrap) - Rule 30 cellular automaton
+- [shapes](shapes.scrap) - Area and volume calculations
