@@ -1,18 +1,16 @@
 volume #cylinder {h = 4, r = 5}
 
--- Solid ::
--- | #cylinder { h : Float, r : Float }
--- | #cube Float
--- | #sphere Float
--- | #cone { h : Float, r : Float }
--- | #pyramid { l : Float, h : Float }
+-- Solid :: #cylinder { h : Float, r : Float }
+--        | #cube Float
+--        | #sphere Float
+--        | #cone { h : Float, r : Float }
+--        | #pyramid { l : Float, h : Float }
 
--- Shape ::
--- | #circle Float
--- | #rectangle { w : Float, h : Float }
--- | #trapezoid { t : Float, b : Float, h : Float }
--- | #square Float
--- | #triangle { b : Float, h : Float }
+-- Shape :: #circle Float
+--        | #rectangle { w : Float, h : Float }
+--        | #trapezoid { t : Float, b : Float, h : Float }
+--        | #square Float
+--        | #triangle { b : Float, h : Float }
 
 -- volume :: Solid -> Float
 . volume = solid -> solid |>

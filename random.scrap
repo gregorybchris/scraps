@@ -1,5 +1,12 @@
 rand_array (new_generator #java () 42) 0 100 10
 
+-- Params :: { mod : Int, mult : Int, inc : Int }
+-- State :: { min : Int, max : Int }
+-- Generator :: { params : Params, seed : Int, state : State }
+-- Method :: #java ()
+--         | #glibc ()
+--         | #houle ()
+
 -- rand_array :: Generator -> Int -> Int -> Int -> List<Int>
 . rand_array = gen -> min -> max -> n -> n |>
   | 0 -> []
