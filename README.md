@@ -12,3 +12,4 @@
 - [random](random.scrap) - Linear congruential generator (LCG) for random numbers
 - [ca](ca.scrap) - Rule 30 cellular automaton
 - [shapes](shapes.scrap) - Area and volume calculations
+- [tree](tree.scrap) - Binary tree insertion and traversal

@@ -1,0 +1,33 @@
+in_order <| build_tree [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9]
+
+-- Tree :: #leaf ()
+--       | #node { l : Tree, v : Int, r : Tree }
+
+-- new_tree :: Tree
+. new_tree = #leaf ()
+
+-- build_tree :: List<Int> -> Tree
+. build_tree = values -> values |>
+  | [] -> #leaf ()
+  | [x, ...xs] -> insert (build_tree xs) x
+
+-- insert :: Tree -> Int -> Tree
+. insert = tree -> value -> tree |>
+  | #leaf () -> #node {l = #leaf (), v = value, r = #leaf ()}
+  | #node {l = l, v = v, r = r} -> value < v |>
+    | #true () -> #node {l = insert l value, v = v, r = r}
+    | #false () -> #node {l = l, v = v, r = insert r value}
+
+-- get :: Tree -> Int -> Bool
+. get = tree -> value -> tree |>
+  | #leaf () -> #false ()
+  | #node {l = l, v = v, r = r} -> value == v |>
+    | #true () -> #true ()
+    | #false () -> value < v |>
+      | #true () -> get l value
+      | #false () -> get r value
+
+-- in_order :: Tree -> List<Int>
+. in_order = tree -> tree |>
+  | #leaf () -> []
+  | #node {l = l, v = v, r = r} -> concat (in_order l +< v) <| in_order r
