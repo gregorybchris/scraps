@@ -1,0 +1,31 @@
+to_str exp ++ " = " ++ $$inttostr (eval exp)
+
+. exp = #div { l = #exp { l = #add { l = #int 1, r = #int 3 }, r = #int 2 }, r = #sub { l = #int 3, r = #int 1 } }
+
+-- Exp :: #int Int
+--      | #add { l : Exp, r : Exp }
+--      | #sub { l : Exp, r : Exp }
+--      | #mul { l : Exp, r : Exp }
+--      | #div { l : Exp, r : Exp }
+--      | #exp { l : Exp, r : Exp }
+--      | #mod { l : Exp, r : Exp }
+
+-- eval :: Exp -> Int
+. eval = exp -> exp |>
+  | #int x -> x
+  | #add {l = l, r = r} -> eval l + eval r
+  | #sub {l = l, r = r} -> eval l - eval r
+  | #mul {l = l, r = r} -> eval l * eval r
+  | #div {l = l, r = r} -> eval l // eval r
+  | #exp {l = l, r = r} -> eval l ^ eval r
+  | #mod {l = l, r = r} -> eval l % eval r
+
+-- to_str :: Exp -> String
+. to_str = exp -> exp |>
+  | #int x -> $$inttostr x
+  | #add { l = l, r = r} -> "(" ++ (to_str l) ++ " + " ++ (to_str r) ++ ")"
+  | #sub { l = l, r = r} -> "(" ++ (to_str l) ++ " - " ++ (to_str r) ++ ")"
+  | #mul { l = l, r = r} -> "(" ++ (to_str l) ++ " * " ++ (to_str r) ++ ")"
+  | #div { l = l, r = r} -> "(" ++ (to_str l) ++ " / " ++ (to_str r) ++ ")"
+  | #exp { l = l, r = r} -> "(" ++ (to_str l) ++ " ^ " ++ (to_str r) ++ ")"
+  | #mod { l = l, r = r} -> "(" ++ (to_str l) ++ " % " ++ (to_str r) ++ ")"

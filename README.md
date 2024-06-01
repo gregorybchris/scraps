@@ -13,3 +13,4 @@
 - [ca](ca.scrap) - Rule 30 cellular automaton
 - [shapes](shapes.scrap) - Area and volume calculations
 - [tree](tree.scrap) - Binary tree insertion and traversal
+- [eval](eval.scrap) - Small expression evaluator
