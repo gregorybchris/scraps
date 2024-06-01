@@ -9,8 +9,8 @@
 - [bfs](bfs.scrap) - grid-based breadth-first search
 - [hull](hull.scrap) - convex hull with the gift wrapping (Jarvis march) algorithm
 - [church](church.scrap) - Church encodings for numbers, booleans, pairs, and lists
-- [random](random.scrap) - Linear congruential generator (LCG) for random numbers
-- [ca](ca.scrap) - Rule 30 cellular automaton
-- [shapes](shapes.scrap) - Area and volume calculations
-- [tree](tree.scrap) - Binary tree insertion and traversal
-- [eval](eval.scrap) - Small expression evaluator
+- [random](random.scrap) - linear congruential generator (LCG) for random numbers
+- [ca](ca.scrap) - rule 30 cellular automaton
+- [shapes](shapes.scrap) - area and volume calculations
+- [tree](tree.scrap) - binary tree insertion and traversal
+- [eval](eval.scrap) - small expression evaluator
